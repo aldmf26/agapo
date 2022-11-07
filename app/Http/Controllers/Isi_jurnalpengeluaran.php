@@ -165,12 +165,14 @@ class Isi_jurnalpengeluaran extends Controller
 
     public function save_jurnal_pv(Request $r)
     {
+        
         $no_id = $r->no_id;
         $ttl_rp = $r->ttl_rp;
         $ket = $r->keterangan;
         $id_post = $r->id_post_center;
         $id_barang = $r->id_barang;
         $qty = $r->qty;
+        $id_satuan = $r->id_satuan ?? 0;
 
         $akun = DB::table('tb_akun')->where('id_akun', $r->id_akun)->first();
         $urutan = DB::selectOne("SELECT max(a.urutan) as urutan FROM tb_jurnal as a where a.id_buku = '3'");
@@ -180,8 +182,6 @@ class Isi_jurnalpengeluaran extends Controller
         } else {
             $no_urutan = $urutan->urutan + 1;
         }
-
-
 
         $data = [
             'id_akun' => $r->id_akun_kredit,
@@ -207,6 +207,7 @@ class Isi_jurnalpengeluaran extends Controller
                 'ket' => $ket[$x],
                 'qty' => $qty[$x],
                 'no_id' =>  $no_id[$x],
+                'id_satuan' =>  $id_satuan[$x],
                 'id_barang_pv' => $id_barang[$x],
                 'admin' => Auth::user()->name
             ];
@@ -224,7 +225,7 @@ class Isi_jurnalpengeluaran extends Controller
         }
 
         $tgl1 = date('Y-m-01', strtotime($r->tgl));
-        return redirect()->route("jurnal_pengeluaran", ['tgl1' => $tgl1, 'tgl2' => $r->tgl])->with('sukses', 'Data berhasil di input');
+        return redirect()->route($r->dashboard ?? "jurnal_pengeluaran", ['tgl1' => $tgl1, 'tgl2' => $r->tgl])->with('sukses', 'Data berhasil di input');
     }
 
     public function save_aktiva(Request $r)
