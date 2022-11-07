@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -10,11 +11,55 @@ class Dashboard extends Controller
 {
     public function index(Request $r)
     {
+        $no_po = DB::selectOne("SELECT max(a.no_po) as no_po FROM tb_po as a");
+        $no_po = empty($no_po->no_po) ? '0001' : $no_po->no_po+1;
         $data = [
-            'title' => 'Dashboard'
+            'title' => 'Dashboard',
+            'no_po' => $no_po,
         ];
 
         return view('dashboard.welcome', $data);
+    }
+
+    public function plus_barang(Request $r)
+    {
+        return view('dashboard.plus_barang', ['c' => $r->c]);
+    }
+
+    public function save_po(Request $r)
+    {
+        $tgl = $r->tgl;
+        $nm_po = $r->nm_po;
+        $tujuan = $r->tujuan;
+        $no_po = $r->no_po;
+
+        $nm_barang = $r->nm_barang;
+        $qty = $r->qty;
+        $harga = $r->harga;
+        $ket = $r->ket;
+
+        $data = [
+            'tgl' => $tgl,
+            'nm_po' => $nm_po,
+            'tujuan' => $tujuan,
+            'no_po' => $no_po,
+            'admin' => Auth::user()->name,
+            'tgl_input' => date('Y-m-d H:i:s')
+        ];
+
+        DB::table('tb_po')->insert($data);
+
+        for ($i = 0; $i < count($r->nm_barang); $i++) {
+
+            $data = [
+                'no_po' => $no_po,
+                'nm_barang' => $nm_barang[$i],
+                'qty' => $qty[$i],
+                'harga' => $harga[$i],
+                'ket' => $ket[$i],
+            ];
+            DB::table('tb_barang_po')->insert($data);
+        }
     }
 
     public function kontenViewSolar()

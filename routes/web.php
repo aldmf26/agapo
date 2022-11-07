@@ -49,6 +49,8 @@ Route::get('/verify', [Verify::class, 'index'])->name('verify');
 // })->middleware(['auth'])->name('dashboard');
 
 Route::get('/dashboard', [Dashboard::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/plus_barang', [Dashboard::class, 'plus_barang'])->middleware(['auth', 'verified'])->name('plus_barang');
+Route::post('/save_po', [Dashboard::class, 'save_po'])->middleware(['auth', 'verified'])->name('save_po');
 
 
 

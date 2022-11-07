@@ -23,7 +23,8 @@
                                     <h5>Data PO</h5>
                                 </div>
                                 <div class="float-right">
-                                    <a href="#" data-target="#add-po" data-toggle="modal" class="btn btn-primary"><i class="fa fa-plus"></i> PO</a>
+                                    <a href="#" data-target="#add-po" data-toggle="modal" class="btn btn-primary"><i
+                                            class="fa fa-plus"></i> PO</a>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -51,56 +52,116 @@
                                 </table>
                             </div>
                         </div>
-                    </div>  
+                    </div>
                 </div>
             </div>
         </section>
 
-        <div class="modal fade" id="add-po" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                     <div class="modal-header bg-costume">
-                          <h5 class="modal-title" id="exampleModalLabel">Tambah Po</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                               <span aria-hidden="true">&times;</span>
-                          </button>
-                     </div>
-                     <div class="modal-body">
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <div class="form-group">
-                                    <label for="">Nama Barang</label>
-                                    <input type="text" name="nm_barang" class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-lg-2">
-                                <div class="form-group">
-                                    <label for="">Qty</label>
-                                    <input type="number" name="qty" class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-lg-2">
-                                <div class="form-group">
-                                    <label for="">Harga</label>
-                                    <input type="text" name="harga" class="form-control">
-                                </div>        
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="form-group">
-                                    <label for="">Tujuan</label>
-                                    <input type="text" name="tujuan" class="form-control">
-                                </div>
-                            </div>
+        <form action="{{ route('save_po') }}" method="post">
+        @csrf
+            <div class="modal fade" id="add-po" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-costume">
+                            <h5 class="modal-title" id="exampleModalLabel">Tambah Po</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
-                     </div>
-                     <div class="modal-footer">
-                          <button type="submit" class="btn btn-costume">Edit/Save</button>
-                     </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label for="">Tanggal</label>
+                                        <input required type="date" name="tgl" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label for="">Nama Po</label>
+                                        <input required type="text" name="nm_po" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label for="">Tujuan</label>
+                                        <input required type="text" name="tujuan" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label for="">No PO</label>
+                                        <input type="text" readonly name="no_po" value="{{ $no_po }}" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label for="">Nama Barang</label>
+                                        <input required type="text" name="nm_barang[]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label for="">Qty</label>
+                                        <input type="number" name="qty[]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label for="">Harga</label>
+                                        <input type="text" name="harga[]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label for="">Keterangan</label>
+                                        <input type="text" name="ket[]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-1">
+                                    <div class="form-group">
+                                        <label for="">Aksi</label><br>
+                                        <button class="btn btn-success btn-sm" id="plus-barang" type="button"><i
+                                                class="fa fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="view-plus-barang"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-costume">Edit/Save</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </form>
+    @endsection
+    @section('script')
+        <script>
+            $(document).ready(function() {
+                var c = 1
+                tambahBarang(c)
+                
+                function tambahBarang(c) {
+                    $("#plus-barang").click(function(e) {
+                        c += 1
+                        $.ajax({
+                            type: "GET",
+                            url: "{{ route('plus_barang') }}?c="+c,
+                            success: function(r) {
+                                $("#view-plus-barang").append(r);
+                            }
+                        });
+                    });
 
-
-
-            
-@endsection
+                    $(document).on('click', '.remove-barang', function() {
+                        var delete_row = $(this).attr("count");
+                        $('#row' + delete_row).remove();
+                    })
+                }
+                
+            });
+        </script>
+    @endsection
